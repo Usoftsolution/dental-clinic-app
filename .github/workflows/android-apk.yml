@@ -31,9 +31,9 @@ jobs:
       - name: Generate the Android project
         run: npx expo prebuild --platform android --no-install
 
-      - name: Build the APK (arm64 phones)
+      - name: Build the APK (all phone types)
         working-directory: android
-        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
+        run: ./gradlew assembleRelease --no-daemon
 
       - name: Name the file
         run: cp android/app/build/outputs/apk/release/app-release.apk DentalClinic-test.apk
