@@ -1,0 +1,50 @@
+name: Android test APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Generate the Android project
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Build the APK (arm64 phones)
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
+
+      - name: Name the file
+        run: cp android/app/build/outputs/apk/release/app-release.apk DentalClinic-test.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DentalClinic-test-apk
+          path: DentalClinic-test.apk
+          retention-days: 30
+
+      - name: Publish as a release (download link)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: test-${{ github.run_number }}
+          name: Test APK ${{ github.run_number }}
+          files: DentalClinic-test.apk
+          prerelease: true
