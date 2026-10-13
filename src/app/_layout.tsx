@@ -42,6 +42,8 @@ function open(target: PushTarget | null) {
   }
   if (target.screen === 'appointment' && target.id) {
     router.push({ pathname: '/appointment/[id]', params: { id: String(target.id) } });
+  } else if (target.screen === 'patient' && target.id) {
+    router.push({ pathname: '/patient/[id]', params: { id: String(target.id) } });
   } else if (target.screen === 'lab') {
     router.push('/lab');
   } else {
